@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Registration Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
 
     <style>
 
@@ -11,7 +11,7 @@
             margin:0;
             padding:0;
             box-sizing:border-box;
-            font-family:Arial, sans-serif;
+            font-family:Arial;
         }
 
         body{
@@ -22,18 +22,17 @@
             background:linear-gradient(135deg,#4facfe,#00f2fe);
         }
 
-        .register-box{
-            width:380px;
+        .login-box{
+            width:350px;
             background:white;
             padding:30px;
             border-radius:12px;
             box-shadow:0 0 20px rgba(0,0,0,0.2);
         }
 
-        .register-box h2{
+        .login-box h2{
             text-align:center;
-            margin-bottom:25px;
-            color:#333;
+            margin-bottom:20px;
         }
 
         .input-box{
@@ -45,12 +44,6 @@
             padding:12px;
             border:1px solid #ccc;
             border-radius:6px;
-            outline:none;
-            font-size:15px;
-        }
-
-        .input-box input:focus{
-            border-color:#007bff;
         }
 
         .btn{
@@ -59,31 +52,13 @@
             border:none;
             background:#007bff;
             color:white;
-            font-size:16px;
             border-radius:6px;
             cursor:pointer;
-            transition:0.3s;
-        }
-
-        .btn:hover{
-            background:#0056b3;
-        }
-
-        .text{
-            text-align:center;
-            margin-top:15px;
-            font-size:14px;
-        }
-
-        .text a{
-            color:#007bff;
-            text-decoration:none;
         }
 
         .message{
-            margin-top:15px;
             text-align:center;
-            font-size:14px;
+            margin-top:15px;
             font-weight:bold;
         }
 
@@ -93,20 +68,11 @@
 
 <body>
 
-    <div class="register-box">
+    <div class="login-box">
 
-        <h2>Create Account</h2>
+        <h2>Login</h2>
 
-        <form id="registerForm">
-
-            <div class="input-box">
-                <input 
-                    type="text"
-                    id="name"
-                    placeholder="Enter Full Name"
-                    required
-                >
-            </div>
+        <form id="loginForm">
 
             <div class="input-box">
                 <input 
@@ -127,13 +93,8 @@
             </div>
 
             <button type="submit" class="btn">
-                Register
+                Login
             </button>
-
-            <div class="text">
-                Already have an account?
-                <a href="login.html">Login</a>
-            </div>
 
             <div class="message" id="message"></div>
 
@@ -141,39 +102,31 @@
 
     </div>
 
-    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
 
-        // SUPABASE CONFIG
         const supabaseUrl =
         "https://ddcpuekxgoqdcpyurgir.supabase.co";
 
         const supabaseKey =
         "sb_publishable_u3l7ka3cCywbRntsC9A8OQ_yrMG3-cd";
 
-        // CREATE CLIENT
         const supabaseClient =
         supabase.createClient(
             supabaseUrl,
             supabaseKey
         );
 
-        // MESSAGE BOX
         const message =
         document.getElementById("message");
 
-        // REGISTER FORM
         document
-        .getElementById("registerForm")
+        .getElementById("loginForm")
         .addEventListener("submit",
         async function(e){
 
             e.preventDefault();
-
-            const name =
-            document.getElementById("name").value;
 
             const email =
             document.getElementById("email").value;
@@ -181,18 +134,11 @@
             const password =
             document.getElementById("password").value;
 
-            // REGISTER USER
             const { data, error } =
-            await supabaseClient.auth.signUp({
+            await supabaseClient.auth.signInWithPassword({
 
                 email: email,
-                password: password,
-
-                options: {
-                    data: {
-                        full_name: name
-                    }
-                }
+                password: password
 
             });
 
@@ -201,7 +147,7 @@
                 message.style.color = "red";
 
                 message.innerText =
-                "Registration Failed : " + error.message;
+                error.message;
 
             }
             else{
@@ -209,17 +155,9 @@
                 message.style.color = "green";
 
                 message.innerText =
-                "Registration Successful";
+                "Login Successful";
 
                 console.log(data);
-
-                // REDIRECT
-                setTimeout(() => {
-
-                    window.location.href =
-                    "login.html";
-
-                }, 1500);
 
             }
 
