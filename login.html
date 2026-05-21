@@ -44,6 +44,7 @@
             padding:12px;
             border:1px solid #ccc;
             border-radius:6px;
+            outline:none;
         }
 
         .btn{
@@ -54,12 +55,18 @@
             color:white;
             border-radius:6px;
             cursor:pointer;
+            font-size:16px;
+        }
+
+        .btn:hover{
+            background:#0056b3;
         }
 
         .message{
             text-align:center;
             margin-top:15px;
             font-weight:bold;
+            font-size:18px;
         }
 
     </style>
@@ -102,25 +109,31 @@
 
     </div>
 
+    <!-- SUPABASE CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
 
+        // SUPABASE URL
         const supabaseUrl =
         "https://ddcpuekxgoqdcpyurgir.supabase.co";
 
+        // SUPABASE API KEY
         const supabaseKey =
         "sb_publishable_u3l7ka3cCywbRntsC9A8OQ_yrMG3-cd";
 
+        // CREATE CLIENT
         const supabaseClient =
         supabase.createClient(
             supabaseUrl,
             supabaseKey
         );
 
+        // MESSAGE BOX
         const message =
         document.getElementById("message");
 
+        // LOGIN FORM
         document
         .getElementById("loginForm")
         .addEventListener("submit",
@@ -134,6 +147,7 @@
             const password =
             document.getElementById("password").value;
 
+            // LOGIN USER
             const { data, error } =
             await supabaseClient.auth.signInWithPassword({
 
@@ -147,15 +161,42 @@
                 message.style.color = "red";
 
                 message.innerText =
-                error.message;
+                "Login Failed : " + error.message;
 
             }
             else{
 
-                message.style.color = "green";
+                // GET USER EMAIL
+                const userEmail =
+                data.user.email;
 
-                message.innerText =
-                "Login Successful";
+                // FETCH USER NAME
+                const {
+                    data: userData,
+                    error: fetchError
+                } =
+                await supabaseClient
+                .from("form")
+                .select("Name")
+                .eq("Email", userEmail)
+                .single();
+
+                if(fetchError){
+
+                    message.style.color = "red";
+
+                    message.innerText =
+                    "User not found";
+
+                }
+                else{
+
+                    message.style.color = "green";
+
+                    message.innerText =
+                    "Welcome " + userData.Name;
+
+                }
 
                 console.log(data);
 
