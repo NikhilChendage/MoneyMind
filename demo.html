@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Login Page</title>
+    <title>Supabase Login</title>
 
     <style>
+
         *{
             margin:0;
             padding:0;
@@ -18,20 +19,21 @@
             display:flex;
             justify-content:center;
             align-items:center;
-            background:#f2f2f2;
+            background:linear-gradient(135deg,#4facfe,#00f2fe);
         }
 
         .login-box{
             width:350px;
             background:white;
             padding:30px;
-            border-radius:10px;
-            box-shadow:0 0 10px rgba(0,0,0,0.1);
+            border-radius:12px;
+            box-shadow:0 0 20px rgba(0,0,0,0.2);
         }
 
         .login-box h2{
             text-align:center;
-            margin-bottom:20px;
+            margin-bottom:25px;
+            color:#333;
         }
 
         .input-box{
@@ -42,8 +44,13 @@
             width:100%;
             padding:12px;
             border:1px solid #ccc;
-            border-radius:5px;
+            border-radius:6px;
             outline:none;
+            font-size:15px;
+        }
+
+        .input-box input:focus{
+            border-color:#007bff;
         }
 
         .btn{
@@ -53,8 +60,9 @@
             background:#007bff;
             color:white;
             font-size:16px;
-            border-radius:5px;
+            border-radius:6px;
             cursor:pointer;
+            transition:0.3s;
         }
 
         .btn:hover{
@@ -71,7 +79,16 @@
             color:#007bff;
             text-decoration:none;
         }
+
+        .message{
+            margin-top:15px;
+            text-align:center;
+            font-size:14px;
+            font-weight:bold;
+        }
+
     </style>
+
 </head>
 
 <body>
@@ -84,18 +101,18 @@
 
             <div class="input-box">
                 <input 
-                    type="email" 
+                    type="email"
                     id="email"
-                    placeholder="Enter Email" 
+                    placeholder="Enter Email"
                     required
                 >
             </div>
 
             <div class="input-box">
                 <input 
-                    type="password" 
+                    type="password"
                     id="password"
-                    placeholder="Enter Password" 
+                    placeholder="Enter Password"
                     required
                 >
             </div>
@@ -106,8 +123,10 @@
 
             <div class="text">
                 Don't have an account?
-                <a href="#">Register</a>
+                <a href="#" id="registerBtn">Register</a>
             </div>
+
+            <div class="message" id="message"></div>
 
         </form>
 
@@ -118,10 +137,10 @@
 
     <script>
 
-        // YOUR SUPABASE DETAILS
+        // SUPABASE CONFIG
         const supabaseUrl = "https://ddcpuekxgoqdcpyurgir.supabase.co";
 
-        const supabaseKey = "YOUR_ANON_PUBLIC_KEY";
+        const supabaseKey = "sb_publishable_u3l7ka3cCywbRntsC9A8OQ_yrMG3-cd";
 
         // CREATE CLIENT
         const supabaseClient = supabase.createClient(
@@ -129,7 +148,10 @@
             supabaseKey
         );
 
-        // LOGIN FORM
+        // MESSAGE BOX
+        const message = document.getElementById("message");
+
+        // LOGIN
         document
         .getElementById("loginForm")
         .addEventListener("submit", async function(e){
@@ -140,22 +162,89 @@
 
             const password = document.getElementById("password").value;
 
-            // LOGIN
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
+            const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+
                 email: email,
                 password: password
+
             });
 
             if(error){
-                alert("Login Failed : " + error.message);
+
+                message.style.color = "red";
+
+                message.innerText =
+                "Login Failed : " + error.message;
+
             }
             else{
-                alert("Login Successful");
+
+                message.style.color = "green";
+
+                message.innerText =
+                "Login Successful";
 
                 console.log(data);
 
-                // Redirect after login
-                window.location.href = "dashboard.html";
+                // REDIRECT
+                setTimeout(() => {
+
+                    window.location.href = "dashboard.html";
+
+                }, 1000);
+
+            }
+
+        });
+
+        // REGISTER
+        document
+        .getElementById("registerBtn")
+        .addEventListener("click", async function(){
+
+            const email =
+            document.getElementById("email").value;
+
+            const password =
+            document.getElementById("password").value;
+
+            if(email === "" || password === ""){
+
+                message.style.color = "red";
+
+                message.innerText =
+                "Enter email and password";
+
+                return;
+
+            }
+
+            const { data, error } =
+            await supabaseClient.auth.signUp({
+
+                email: email,
+                password: password
+
+            });
+
+            if(error){
+
+                message.style.color = "red";
+
+                message.innerText =
+                "Registration Failed : " + error.message;
+
+            }
+            else{
+
+                message.style.color = "green";
+
+                message.innerText =
+                "Registration Successful";
+
+                console.log(data);
+
             }
 
         });
